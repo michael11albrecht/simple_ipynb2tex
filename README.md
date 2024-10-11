@@ -32,4 +32,4 @@ To use the `simpleipynb2tex` script, you need to provide the following parameter
 - **tex path**: The path where the LaTeX file will be saved.
 
 ## License
-This project is licensed under the MIT License.
+TODO

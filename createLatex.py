@@ -1,6 +1,7 @@
 import json
 import imgkit
 import os
+import base64
 
 
 class CreateLatex:
@@ -124,11 +125,22 @@ Output:
                 self.create_figure_file(html, f"figure_{self.figure_nr}")
                 self.figure_nr += 1
                 return f"\\begin{{figure}}[H]\n\\centerline{{\\includegraphics[width=18.5cm]{{graphics/figure_{self.figure_nr-1}.jpg}}}}\n\\label{{figure {self.figure_nr-1}}}\n\\end{{figure}}"
+            elif 'image/png' in output['data']:
+                png = output['data']['image/png']
+                self.save_png(png, f"figure_{self.figure_nr}")
+                self.figure_nr += 1
+                return f"\\begin{{figure}}[H]\n\\centerline{{\\includegraphics[width=18.5cm]{{graphics/figure_{self.figure_nr-1}.jpg}}}}\n\\label{{figure {self.figure_nr-1}}}\n\\end{{figure}}"
 
     def create_figure_file(self, output, file_name):
         html = ''.join(output)
         os.makedirs(self.graphics_path, exist_ok=True)
         imgkit.from_string(html, f"{self.graphics_path}/{file_name}.jpg")
+
+    def save_png(self, base64_png, file_name):
+        os.makedirs(self.graphics_path, exist_ok=True)
+        png = base64.b64decode(base64_png)
+        with open(f"{self.graphics_path}/{file_name}.png", "wb") as f:
+            f.write(png)
     
     def create_latex(self):
         last_cell_code = False
@@ -136,15 +148,27 @@ Output:
         self.latex_list.append(self.create_title())
         for cell in self.data["cells"]:
             if cell["cell_type"] == "markdown":
-                self.latex_list.append(self.convert_markdown("".join(cell["source"])))
+                md = self.convert_markdown("".join(cell["source"]))
+                if type(md) == str:
+                    self.latex_list.append(md)
+                else:
+                    print("Error in markdown")
                 last_cell_code = False
             elif cell["cell_type"] == "code":
                 if not last_cell_code:
                     self.latex_list.append("\n\\subsubsection{{Code}}")
-                self.latex_list.append(self.create_code_section("".join(cell["source"])))
+                code = self.create_code_section("".join(cell["source"]))
+                if type(code) == str:
+                    self.latex_list.append(code)
+                else:
+                    print("Error in code")
                 last_cell_code = True
                 for output in cell["outputs"]:
-                    self.latex_list.append(self.handle_output(output))
+                    h_output = self.handle_output(output)
+                    if type(h_output) == str:
+                        self.latex_list.append(h_output)
+                    else:
+                        print("Error in output")
         self.latex_list.append(self.create_foot())
 
 
@@ -154,10 +178,10 @@ Output:
         
 
 if __name__ == "__main__":
-    ipynb_path = "example.ipynb"
-    save_path = "example.tex"
-    title = "Example"
-    author = "Author"
+    ipynb_path = "input/a3_8.ipynb"
+    save_path = "output/a3_8.tex"
+    title = ""
+    author = ""
     cl = CreateLatex(ipynb_path, save_path, title, author)
     cl.create_latex()
     cl.save_latex()

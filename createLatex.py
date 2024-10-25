@@ -129,7 +129,7 @@ Output:
                 png = output['data']['image/png']
                 self.save_png(png, f"figure_{self.figure_nr}")
                 self.figure_nr += 1
-                return f"\\begin{{figure}}[H]\n\\centerline{{\\includegraphics[width=18.5cm]{{graphics/figure_{self.figure_nr-1}.jpg}}}}\n\\label{{figure {self.figure_nr-1}}}\n\\end{{figure}}"
+                return f"\\begin{{figure}}[H]\n\\centerline{{\\includegraphics[width=18.5cm]{{graphics/figure_{self.figure_nr-1}.png}}}}\n\\label{{figure {self.figure_nr-1}}}\n\\end{{figure}}"
 
     def create_figure_file(self, output, file_name):
         html = ''.join(output)

@@ -80,10 +80,10 @@ class CreateLatex:
         return code_section
     
     def convert_markdown(self, markdown):
-        if markdown.startswith("#"):
-            return f"\\section{{{markdown.replace('#', '').replace('_', '-')}}}"
-        elif markdown.startswith("##"):
+        if markdown.startswith("##"):
             return f"\\subsection{{{markdown.replace('##', '').replace('_', '-')}}}"
+        elif markdown.startswith("#"):
+            return f"\\section{{{markdown.replace('#', '').replace('_', '-')}}}"
         else:
             return markdown.replace('_', '-')
 
